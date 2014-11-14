@@ -12,3 +12,11 @@ De gebruiker krijgt het hele plaatje te zien, verdeeld in n vakjes. Deze afbeeld
 ![My image](https://raw.githubusercontent.com/MarcSelles/nPuzzle10447768/master/nPuzzle%20readme/spel%20random.png)
 
 De vakjes worden willekeurig geplaatst in het scherm. Hiermee wordt het spel gestart. De gebruiker kan een vakje opschuiven wanneer 1 van de vakjes om het vakje heen het lege vakje is. Er moet dan getikt worden op het vakje om hem te verplaatsen naar het lege vakje.
+
+![My image](https://raw.githubusercontent.com/MarcSelles/nPuzzle10447768/master/nPuzzle%20readme/Menu.png)
+
+Wanneer de gebruiker tijdens het spelen op de knop MENU klikt, komt hij in bovenstaand scherm. Hier kan hij de puzzel resetten, waardoor de vakjes weer op een willekeurige plaats worden gezet, om de moeilijkheid te veranderen, wat standaard op medium staat, en om het spel te stoppen, waardoor de gebruiker weer terug naar het scherm gaat om een afbeelding te kiezen.
+
+![My image](https://raw.githubusercontent.com/MarcSelles/nPuzzle10447768/master/nPuzzle%20readme/Uitgespeeld.png)
+
+Als de gebruiker het spel heeft uitgespeeld, dit gebeurt wanneer de puzzel er net zo uitziet als in de tweede afbeelding, krijgt hij een berichtje waarin informatie staat over zijn spel. Nu kan hij door middel van START EEN NIEUW SPEL terug naar een afbeelding uitkiezen
