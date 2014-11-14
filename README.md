@@ -33,5 +33,13 @@ Classes:
 Er wordt gebruik gemaakt van een class Field. Hierin wordt opgeslagen waar alle vakjes gepositioneerd zijn in het spel. Wanneer er een spel gestart wordt, wordt er een Field aangemaakt. Deze krijgt de parameters moeilijkheid en afbeelding mee. Hiermee kan vervolgens worden bepaald welk afbeelding gemaakt moet worden en in hoeveel vakjes het veld gemaakt moet worden. In de class worden het aantal stappen ook bijgehouden.
 Een nieuwe zet wordt doormiddel van een functie setTiles gedaan. Deze geeft de aparte vakjes een positie.
 
-Welke API?
-Welke data moet worden opgeslagen?
+Bitmap:
+
+De afbeeldingen waar de puzzel uit gaat bestaan worden door de bitmap verwerkt. Daarom moeten ze in de drawable map komen. Hierdoor kunnen we vakjes maken van de afbeelding. Hier wordt gebruik gemaakt van imageView.
+
+Een overzicht van hoe bitmap gebruikt wordt:
+- decodeResource
+- createScaledBitmap
+- createBitmap
+
+Het is belangrijk dat de instance van class Field opgeslagen wordt, indien de app afgesloten wordt. Wanneer dit niet gedaan wordt, moet de gebruiker altijd een nieuw spel beginnen wanneer hij de app opstart in plaats van dat hij zijn spel kan vervolgen.
