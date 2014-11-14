@@ -19,11 +19,9 @@ Er komt geen nieuw scherm, maar de class wordt veranderd
 
 De vakjes worden willekeurig geplaatst in het scherm. Hiermee wordt het spel gestart. De gebruiker kan een vakje opschuiven wanneer 1 van de vakjes om het vakje heen het lege vakje is. Er moet dan getikt worden op het vakje om hem te verplaatsen naar het lege vakje.
 
-Wann
-
 ![My image](https://raw.githubusercontent.com/MarcSelles/nPuzzle10447768/master/nPuzzle%20readme/Menu.png)
 
-Wanneer de gebruiker tijdens het spelen op de knop MENU klikt, komt hij in bovenstaand scherm. Hier kan hij de puzzel resetten, waardoor de vakjes weer op een willekeurige plaats worden gezet, om de moeilijkheid te veranderen, wat standaard op medium staat, en om het spel te stoppen, waardoor de gebruiker weer terug naar het scherm gaat om een afbeelding te kiezen.
+Wanneer de gebruiker tijdens het spelen op de knop MENU klikt, komt hij in bovenstaand scherm. Hier kan hij de puzzel resetten, waardoor de vakjes weer op een willekeurige plaats worden gezet, om de moeilijkheid te veranderen, wat standaard op medium staat, en om het spel te stoppen, waardoor de gebruiker weer terug naar het scherm gaat om een afbeelding te kiezen. Indien er gereset wordt, is eerst het gehele plaatje zoals in de tweede afbeelding eerst opnieuw drie seconden te zien. 
 
 ![My image](https://raw.githubusercontent.com/MarcSelles/nPuzzle10447768/master/nPuzzle%20readme/Uitgespeeld.png)
 
