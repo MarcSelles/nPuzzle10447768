@@ -32,6 +32,7 @@ Classes:
 
 Er wordt gebruik gemaakt van een class Field. Hierin wordt opgeslagen waar alle vakjes gepositioneerd zijn in het spel. Wanneer er een spel gestart wordt, wordt er een Field aangemaakt. Deze krijgt de parameters moeilijkheid en afbeelding mee. Hiermee kan vervolgens worden bepaald welk afbeelding gemaakt moet worden en in hoeveel vakjes het veld gemaakt moet worden. In de class worden het aantal stappen ook bijgehouden.
 Een nieuwe zet wordt doormiddel van een functie setTiles gedaan. Deze geeft de aparte vakjes een positie.
+Ook moet er worden bijgehouden welk vakje leeg is. Dan wordt er namelijk duidelijk welke vakjes kunnen bewegen en welke niet. Dit vakje kan worden gevonden door een functie in de class.
 
 Bitmap:
 
