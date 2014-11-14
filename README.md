@@ -11,4 +11,4 @@ De gebruiker krijgt het hele plaatje te zien, verdeeld in n vakjes. Deze afbeeld
 
 ![My image](https://raw.githubusercontent.com/MarcSelles/nPuzzle10447768/master/nPuzzle%20readme/spel%20random.png)
 
-De vakjes worden willekeurig geplaatst in het scherm. Hiermee wordt het spel gestart.
+De vakjes worden willekeurig geplaatst in het scherm. Hiermee wordt het spel gestart. De gebruiker kan een vakje opschuiven wanneer 1 van de vakjes om het vakje heen het lege vakje is. Er moet dan getikt worden op het vakje om hem te verplaatsen naar het lege vakje.
