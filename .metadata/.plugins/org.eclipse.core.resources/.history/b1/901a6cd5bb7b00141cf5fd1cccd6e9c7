@@ -1,0 +1,46 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical" >
+
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="0.3" >
+        <LinearLayout
+            android:id="@+id/gallery1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            />
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/textAfbeeldingNr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Gekozen Afbeelding: 1" />
+
+    <SeekBar
+        android:id="@+id/sliderMoeilijkheid"
+        android:layout_width="211dp"
+        android:layout_height="wrap_content"
+        android:max="2"
+        android:progress="1" />
+
+    <TextView
+        android:id="@+id/textMoeilijkheid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Moeilijkheid: Normaal" />
+
+    <Button
+        android:id="@+id/startButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start" 
+        android:onClick="toGame"/>
+
+</LinearLayout>
