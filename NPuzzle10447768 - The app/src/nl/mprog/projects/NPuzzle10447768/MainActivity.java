@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
@@ -20,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
+import android.widget.RadioButton;
 
 @SuppressLint("NewApi")
 public class MainActivity extends Activity 
@@ -63,16 +65,16 @@ public class MainActivity extends Activity
 //            }
 //        }
         
-        reqWidth = (int) (getResources().getDisplayMetrics().widthPixels * 0.4);
-        reqHeight= (int) (getResources().getDisplayMetrics().widthPixels * 0.4);
+//        reqWidth = (int) (getResources().getDisplayMetrics().widthPixels * 0.4);
+//        reqHeight= (int) (getResources().getDisplayMetrics().widthPixels * 0.4);
         //vul gallery met imgs
-        for(int i=0;i<imageIds.length;i++)
-        {
-            theGallery.addView(addToGallery(imageIds[i], i));
-        }
+//        for(int i=0;i<imageIds.length;i++)
+//        {
+//            theGallery.addView(addToGallery(imageIds[i], i));
+//        }
 
         //maak seekbar
-        initSeek((SeekBar) findViewById(R.id.sliderMoeilijkheid));
+//        initSeek((SeekBar) findViewById(R.id.sliderMoeilijkheid));
 
 
     }
@@ -111,6 +113,7 @@ public class MainActivity extends Activity
             imageView.setImageResource(imageIds[position]);
             return imageView;
         }
+    }
     
     
     @Override
@@ -232,39 +235,62 @@ public class MainActivity extends Activity
 
     
     
-    //initialiseer de seekbar voor difficulty
-    public void initSeek(SeekBar seekbar)
-    {
-        seekbar.setOnSeekBarChangeListener(new OnSeekBarChangeListener()
-        {
+//    //initialiseer de seekbar voor difficulty
+//    public void initSeek(SeekBar seekbar)
+//    {
+//        seekbar.setOnSeekBarChangeListener(new OnSeekBarChangeListener()
+//        {
+//
+//            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
+//            {
+//                difficulty = progress;
+//            }
+//
+//            public void onStartTrackingTouch(SeekBar seekBar)
+//            {
+//
+//            }
+//
+//            public void onStopTrackingTouch(SeekBar seekBar)
+//            {
+//                TextView tv2 = (TextView) findViewById(R.id.textMoeilijkheid);
+//                if(difficulty == 0)
+//                {
+//                    tv2.setText("Moeilijkheid: Makkelijk");
+//                }else if(difficulty == 1)
+//                {
+//                    tv2.setText("Moeilijkheid: Normaal");
+//                }else
+//                {
+//                    tv2.setText("Moeilijkheid: Moeilijk");
+//                }
+//            }
+//        });
+//    }
 
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
-            {
-                difficulty = progress;
-            }
-
-            public void onStartTrackingTouch(SeekBar seekBar)
-            {
-
-            }
-
-            public void onStopTrackingTouch(SeekBar seekBar)
-            {
-                TextView tv2 = (TextView) findViewById(R.id.textMoeilijkheid);
-                if(difficulty == 0)
-                {
-                    tv2.setText("Moeilijkheid: Makkelijk");
-                }else if(difficulty == 1)
-                {
-                    tv2.setText("Moeilijkheid: Normaal");
-                }else
-                {
-                    tv2.setText("Moeilijkheid: Moeilijk");
-                }
-            }
-        });
+    public void onRadioButtonClicked(View view) {
+        // Is the button now checked?
+        boolean checked = ((RadioButton) view).isChecked();
+        
+        // Check which radio button was clicked
+        switch(view.getId()) {
+            case R.id.makkelijk:
+                if (checked)
+                    // set easy
+                	difficulty = 0;
+                break;
+            case R.id.normaal:
+                if (checked)
+                	// set normal
+                	difficulty = 1;
+                break;
+            case R.id.moeilijk:
+                if (checked)
+                    // set hard
+                	difficulty = 2;
+                break;
+        }
     }
-
     
     
     //naar Game

@@ -4,20 +4,21 @@
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
     android:orientation="vertical" >
-    
-    <GridView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/theGallery"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginLeft="10dp"
-    android:layout_marginRight="10dp"
-    android:columnWidth="140dp"
-    android:numColumns="auto_fit"
-    android:verticalSpacing="10dp"
-    android:horizontalSpacing="10dp"
-    android:stretchMode="columnWidth"
-    android:gravity="center"
-	/>
+
+    <GridView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/theGallery"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:columnWidth="140dp"
+        android:gravity="center"
+        android:horizontalSpacing="10dp"
+        android:numColumns="3"
+        
+        android:verticalSpacing="10dp" >
+    </GridView>
 
     <!-- <ScrollView
         android:layout_width="wrap_content"
@@ -38,12 +39,34 @@
         android:layout_height="wrap_content"
         android:text="Gekozen Afbeelding: 1" />
 
-    <SeekBar
+    <RadioGroup 
+        xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="vertical">
+	    <RadioButton android:id="@+id/makkelijk"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="Makkelijk"
+	        android:onClick="onRadioButtonClicked"/>
+	    <RadioButton android:id="@+id/normaal"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="Normaal"
+	        android:onClick="onRadioButtonClicked"/>
+	    <RadioButton android:id="@+id/moeilijk"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="Moeilijk"
+	        android:onClick="onRadioButtonClicked"/>
+</RadioGroup>
+    
+    <!-- <SeekBar
         android:id="@+id/sliderMoeilijkheid"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:max="2"
-        android:progress="1" />
+        android:progress="1" />-->
 
     <TextView
         android:id="@+id/textMoeilijkheid"
