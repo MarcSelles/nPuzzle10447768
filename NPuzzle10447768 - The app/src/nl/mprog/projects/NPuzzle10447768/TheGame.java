@@ -158,7 +158,7 @@ import android.view.MenuItem;
                 }
             };
             Handler h = new Handler();
-            h.postDelayed(r, 3000);
+            h.postDelayed(r, 5000);
         }
         else
         {
@@ -550,7 +550,7 @@ import android.view.MenuItem;
                 if(afterTimer == 1)
                 {
                     PopupMenu popup = new PopupMenu(TheGame.this, buttonMenu);
-                    popup.getMenuInflater().inflate(R.menu.playing, popup.getMenu()); 
+                    popup.getMenuInflater().inflate(R.menu.solution, popup.getMenu()); 
                     popup.show();  
                 }
             }  

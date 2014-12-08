@@ -1,0 +1,21 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">  
+	<item
+        android:id="@+id/afbeelding"  
+        android:title="@string/changeImage"
+        android:onClick="toStart"/>  
+      
+    <item  
+        android:id="@+id/makkelijker"  
+        android:title="@string/easier"
+        android:onClick="toMakkelijker"/>  
+        
+    <item  
+        android:id="@+id/moeilijker"  
+        android:title="@string/harder"
+        android:onClick="toMoeilijker"/>  
+
+    <item  
+        android:id="@+id/terug"  
+        android:title="@string/returnGame"/> 
+          
+</menu> 

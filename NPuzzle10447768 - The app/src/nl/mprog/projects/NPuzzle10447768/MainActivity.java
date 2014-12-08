@@ -2,6 +2,7 @@ package nl.mprog.projects.NPuzzle10447768;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -12,6 +13,8 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.BaseAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
@@ -49,13 +52,23 @@ public class MainActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //make the gallery
-        LinearLayout gallery1 = (LinearLayout)findViewById(R.id.gallery1);
+        GridView theGallery = (GridView)findViewById(R.id.theGallery);
+        theGallery.setAdapter(new ImageAdapter(this));
+        
+//        theGallery.setOnItemClickListener(new OnItemClickListener() {
+//            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+//                TextView tv = (TextView) findViewById(R.id.textAfbeeldingNr);
+//                tv.setText("Gekozen Afbeelding: " + (i+1));
+//                imagenumber = i;
+//            }
+//        }
+        
         reqWidth = (int) (getResources().getDisplayMetrics().widthPixels * 0.4);
         reqHeight= (int) (getResources().getDisplayMetrics().widthPixels * 0.4);
         //vul gallery met imgs
         for(int i=0;i<imageIds.length;i++)
         {
-            gallery1.addView(addGallery(imageIds[i], i));
+            theGallery.addView(addToGallery(imageIds[i], i));
         }
 
         //maak seekbar
@@ -64,13 +77,46 @@ public class MainActivity extends Activity
 
     }
 
+    public class ImageAdapter extends BaseAdapter {
+        private Context mContext;
+
+        public ImageAdapter(Context c) {
+            mContext = c;
+        }
+
+        public int getCount() {
+            return imageIds.length;
+        }
+
+        public Object getItem(int position) {
+            return null;
+        }
+
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        // create a new ImageView for each item referenced by the Adapter
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ImageView imageView;
+            if (convertView == null) {  // if it's not recycled, initialize some attributes
+                imageView = new ImageView(mContext);
+                imageView.setLayoutParams(new GridView.LayoutParams(85, 85));
+                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                imageView.setPadding(8, 8, 8, 8);
+            } else {
+                imageView = (ImageView) convertView;
+            }
+
+            imageView.setImageResource(imageIds[position]);
+            return imageView;
+        }
     
     
     @Override
     protected void onResume()
     {
         super.onResume();
-        Log.v("chingchong", "+ ON RESUME MAIN +");
 
         settings = getSharedPreferences(MyPREFERENCES, 0);
 
@@ -95,7 +141,7 @@ public class MainActivity extends Activity
     
     
     //gallery
-    public View addGallery(Integer imageId, final Integer i)
+    public View addToGallery(Integer imageId, final Integer i)
     {
         //maak bitmap
         Bitmap bm = null, bm2 = null;
@@ -157,7 +203,7 @@ public class MainActivity extends Activity
                 tv.setText("Gekozen Afbeelding: " + (i+1));
                 imagenumber = i;
             }
-        });
+         });
 
         layout.addView(imageView);
         return layout;
