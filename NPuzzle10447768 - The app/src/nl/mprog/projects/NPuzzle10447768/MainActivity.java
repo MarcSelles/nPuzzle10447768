@@ -8,19 +8,16 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RadioGroup;
-import android.widget.SeekBar;
-import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.RadioButton;
 
@@ -41,7 +38,11 @@ public class MainActivity extends Activity
             R.drawable.manhattan_skyline,
             R.drawable.qatar_skyline,
             R.drawable.rush_hour,
-            R.drawable.singapore_city
+            R.drawable.singapore_city,
+            R.drawable.lake,
+            R.drawable.space,
+            R.drawable.waterfall,
+            R.drawable.real_place
         };
     
     public int difficulty = 1, imagenumber = 0;
@@ -74,13 +75,7 @@ public class MainActivity extends Activity
 //        for(int i=0;i<imageIds.length;i++)
 //        {
 //            theGallery.addView(addToGallery(imageIds[i], i));
-//        }
-
-        //maak seekbar
-//        initSeek((SeekBar) findViewById(R.id.sliderMoeilijkheid));
-        final RadioGroup radio = (RadioGroup)findViewById(R.id.radioMoeilijkheid);
-        
-        
+//        }    
     }
 
     public class ImageAdapter extends BaseAdapter {
@@ -101,19 +96,27 @@ public class MainActivity extends Activity
         public long getItemId(int position) {
             return 0;
         }
+        
+        public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+	          TextView tv = (TextView) findViewById(R.id.textAfbeeldingNr);
+//	          long i;
+//	          i = getItemId(position);
+	          tv.setText("Gekozen Afbeelding: " + (position+1));
+	          System.out.print(position);
+//	          imagenumber = i;
+	      }
 
         // create a new ImageView for each item referenced by the Adapter
         public View getView(int position, View convertView, ViewGroup parent) {
             ImageView imageView;
             if (convertView == null) {  // if it's not recycled, initialize some attributes
                 imageView = new ImageView(mContext);
-                imageView.setLayoutParams(new GridView.LayoutParams(100, 100));
+                imageView.setLayoutParams(new GridView.LayoutParams(500, 500));
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 imageView.setPadding(8, 8, 8, 8);
             } else {
                 imageView = (ImageView) convertView;
             }
-
             imageView.setImageResource(imageIds[position]);
             return imageView;
         }
@@ -122,23 +125,26 @@ public class MainActivity extends Activity
     public void onRadioButtonClicked(View view) {
         // Is the button now checked?
         boolean checked = ((RadioButton) view).isChecked();
-        
+        TextView textdif = (TextView) findViewById(R.id.textMoeilijkheid);
         // Check which radio button was clicked
         switch(view.getId()) {
             case R.id.makkelijk:
                 if (checked)
                     // set easy
                 	difficulty = 0;
+                	textdif.setText("Moeilijkheid: Makkelijk");
                 break;
             case R.id.normaal:
                 if (checked)
                 	// set normal
                 	difficulty = 1;
+                	textdif.setText("Moeilijkheid: Normaal");
                 break;
             case R.id.moeilijk:
                 if (checked)
                     // set hard
                 	difficulty = 2;
+                	textdif.setText("Moeilijkheid: Moeilijk");
                 break;
 	            }
 	        }
@@ -260,41 +266,6 @@ public class MainActivity extends Activity
         }
         return subsample;
     }
-
-    
-    
-//    //initialiseer de seekbar voor difficulty
-//    public void initSeek(SeekBar seekbar)
-//    {
-//        seekbar.setOnSeekBarChangeListener(new OnSeekBarChangeListener()
-//        {
-//
-//            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
-//            {
-//                difficulty = progress;
-//            }
-//
-//            public void onStartTrackingTouch(SeekBar seekBar)
-//            {
-//
-//            }
-//
-//            public void onStopTrackingTouch(SeekBar seekBar)
-//            {
-//                TextView tv2 = (TextView) findViewById(R.id.textMoeilijkheid);
-//                if(difficulty == 0)
-//                {
-//                    tv2.setText("Moeilijkheid: Makkelijk");
-//                }else if(difficulty == 1)
-//                {
-//                    tv2.setText("Moeilijkheid: Normaal");
-//                }else
-//                {
-//                    tv2.setText("Moeilijkheid: Moeilijk");
-//                }
-//            }
-//        });
-//    }
 
 
     
