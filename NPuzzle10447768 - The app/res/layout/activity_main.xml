@@ -33,7 +33,7 @@
     -->
 
     <TextView
-        android:id="@+id/textAfbeeldingNr"
+        android:id="@+id/afbeeldingID"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Gekozen Afbeelding: 1" />

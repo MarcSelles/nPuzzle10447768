@@ -1105,6 +1105,7 @@ containing a value of this type.
         public static final int action_settings=0x7f050066;
         public static final int activity_chooser_view_content=0x7f050025;
         public static final int afbeelding=0x7f050067;
+        public static final int afbeeldingID=0x7f05003d;
         public static final int always=0x7f05000b;
         public static final int beginning=0x7f050011;
         public static final int buttonBedankt=0x7f050045;
@@ -1188,7 +1189,6 @@ containing a value of this type.
         public static final int submit_area=0x7f050039;
         public static final int tabMode=0x7f050002;
         public static final int terug=0x7f05006a;
-        public static final int textAfbeeldingNr=0x7f05003d;
         public static final int textGefeliciteerd=0x7f050044;
         public static final int textMoeilijkheid=0x7f050041;
         public static final int theGallery=0x7f05003c;

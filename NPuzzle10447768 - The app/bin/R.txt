@@ -260,6 +260,7 @@ int id action_mode_close_button 0x7f050024
 int id action_settings 0x7f050066
 int id activity_chooser_view_content 0x7f050025
 int id afbeelding 0x7f050067
+int id afbeeldingID 0x7f05003d
 int id always 0x7f05000b
 int id beginning 0x7f050011
 int id buttonBedankt 0x7f050045
@@ -343,7 +344,6 @@ int id startButton 0x7f050042
 int id submit_area 0x7f050039
 int id tabMode 0x7f050002
 int id terug 0x7f05006a
-int id textAfbeeldingNr 0x7f05003d
 int id textGefeliciteerd 0x7f050044
 int id textMoeilijkheid 0x7f050041
 int id theGallery 0x7f05003c

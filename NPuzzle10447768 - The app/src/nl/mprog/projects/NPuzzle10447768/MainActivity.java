@@ -6,20 +6,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.view.Gravity;
+import android.widget.AdapterView.OnItemClickListener;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.RadioButton;
+import android.widget.TextView;
 
 @SuppressLint("NewApi")
 public class MainActivity extends Activity 
@@ -60,6 +56,15 @@ public class MainActivity extends Activity
         //make the gallery
         GridView theGallery = (GridView)findViewById(R.id.theGallery);
         theGallery.setAdapter(new ImageAdapter(this));
+        theGallery.setOnItemClickListener(new OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+            	TextView afb = (TextView) findViewById(R.id.afbeeldingID);
+  	            afb.setText("Gekozen Afbeelding: " + (position+1));
+  	          imagenumber = position;
+            }
+        });
+        
+        
         
 //        theGallery.setOnItemClickListener(new OnItemClickListener() {
 //            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
@@ -77,6 +82,8 @@ public class MainActivity extends Activity
 //            theGallery.addView(addToGallery(imageIds[i], i));
 //        }    
     }
+    
+    
 
     public class ImageAdapter extends BaseAdapter {
         private Context mContext;
@@ -96,15 +103,6 @@ public class MainActivity extends Activity
         public long getItemId(int position) {
             return 0;
         }
-        
-        public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-	          TextView tv = (TextView) findViewById(R.id.textAfbeeldingNr);
-//	          long i;
-//	          i = getItemId(position);
-	          tv.setText("Gekozen Afbeelding: " + (position+1));
-	          System.out.print(position);
-//	          imagenumber = i;
-	      }
 
         // create a new ImageView for each item referenced by the Adapter
         public View getView(int position, View convertView, ViewGroup parent) {
@@ -178,73 +176,73 @@ public class MainActivity extends Activity
     
     
     //gallery
-    public View addToGallery(Integer imageId, final Integer i)
-    {
-        //maak bitmap
-        Bitmap bm = null, bm2 = null;
-        final BitmapFactory.Options options = new BitmapFactory.Options();
-        //vul bitmap
-        try
-        {
-            bm = BitmapFactory.decodeResource(getResources(), imageId);
-        }
-        catch(OutOfMemoryError e)
-        {
-            options.inSampleSize = 2;
-            try
-            {
-                bm = BitmapFactory.decodeResource(getResources(), imageId, options); 
-            }
-            catch(OutOfMemoryError e2)
-            {
-                options.inSampleSize *= 2;
-                try{
-                    bm = BitmapFactory.decodeResource(getResources(), imageId, options);   
-                }
-                catch(OutOfMemoryError e3)
-                {
-                    options.inSampleSize *= 2;
-                    bm = BitmapFactory.decodeResource(getResources(), imageId, options);   
-                }
-
-            }
-            //Use BitmapFactory.Options with an inSampleSize >= 1, and do inSampleSize *= 2 before each retry. 
-        }
-        //maak bitmap kleiner anders lag
-        int subsample = resizeBitmap(bm);
-        bm.recycle();
-        options.inSampleSize = subsample;
-        
-        //maak bitmap met subsample
-        bm2 = BitmapFactory.decodeResource(getResources(), imageId, options); 
-
-        //layout
-        int padding = 50;
-        LinearLayout layout = new LinearLayout(getApplicationContext());
-        layout.setLayoutParams(new LayoutParams(reqHeight+padding, reqWidth+padding));
-        layout.setGravity(Gravity.CENTER);
-
-        //set img view voor bitmap
-        ImageView imageView = new ImageView(getApplicationContext());
-        imageView.setLayoutParams(new LayoutParams(reqHeight, reqWidth));
-        //imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        imageView.setImageBitmap(bm2);
-
-        //set onclick op afbeelding in gallery
-        imageView.setOnClickListener(new OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                TextView tv = (TextView) findViewById(R.id.textAfbeeldingNr);
-                tv.setText("Gekozen Afbeelding: " + (i+1));
-                imagenumber = i;
-            }
-         });
-
-        layout.addView(imageView);
-        return layout;
-    }
+//    public View addToGallery(Integer imageId, final Integer i)
+//    {
+//        //maak bitmap
+//        Bitmap bm = null, bm2 = null;
+//        final BitmapFactory.Options options = new BitmapFactory.Options();
+//        //vul bitmap
+//        try
+//        {
+//            bm = BitmapFactory.decodeResource(getResources(), imageId);
+//        }
+//        catch(OutOfMemoryError e)
+//        {
+//            options.inSampleSize = 2;
+//            try
+//            {
+//                bm = BitmapFactory.decodeResource(getResources(), imageId, options); 
+//            }
+//            catch(OutOfMemoryError e2)
+//            {
+//                options.inSampleSize *= 2;
+//                try{
+//                    bm = BitmapFactory.decodeResource(getResources(), imageId, options);   
+//                }
+//                catch(OutOfMemoryError e3)
+//                {
+//                    options.inSampleSize *= 2;
+//                    bm = BitmapFactory.decodeResource(getResources(), imageId, options);   
+//                }
+//
+//            }
+//            //Use BitmapFactory.Options with an inSampleSize >= 1, and do inSampleSize *= 2 before each retry. 
+//        }
+//        //maak bitmap kleiner anders lag
+//        int subsample = resizeBitmap(bm);
+//        bm.recycle();
+//        options.inSampleSize = subsample;
+//        
+//        //maak bitmap met subsample
+//        bm2 = BitmapFactory.decodeResource(getResources(), imageId, options); 
+//
+//        //layout
+//        int padding = 50;
+//        LinearLayout layout = new LinearLayout(getApplicationContext());
+//        layout.setLayoutParams(new LayoutParams(reqHeight+padding, reqWidth+padding));
+//        layout.setGravity(Gravity.CENTER);
+//
+//        //set img view voor bitmap
+//        ImageView imageView = new ImageView(getApplicationContext());
+//        imageView.setLayoutParams(new LayoutParams(reqHeight, reqWidth));
+//        //imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+//        imageView.setImageBitmap(bm2);
+//
+//        //set onclick op afbeelding in gallery
+//        imageView.setOnClickListener(new OnClickListener()
+//        {
+//            @Override
+//            public void onClick(View v)
+//            {
+//                TextView tv = (TextView) findViewById(R.id.afbeeldingID);
+//                tv.setText("Gekozen Afbeelding: " + (i+1));
+//                imagenumber = i;
+//            }
+//         });
+//
+//        layout.addView(imageView);
+//        return layout;
+//    }
 
 
     
