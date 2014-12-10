@@ -18,6 +18,7 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -53,6 +54,8 @@ public class MainActivity extends Activity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        
+        
         //make the gallery
         GridView theGallery = (GridView)findViewById(R.id.theGallery);
         theGallery.setAdapter(new ImageAdapter(this));
@@ -75,8 +78,9 @@ public class MainActivity extends Activity
 
         //maak seekbar
 //        initSeek((SeekBar) findViewById(R.id.sliderMoeilijkheid));
-
-
+        final RadioGroup radio = (RadioGroup)findViewById(R.id.radioMoeilijkheid);
+        
+        
     }
 
     public class ImageAdapter extends BaseAdapter {
@@ -103,7 +107,7 @@ public class MainActivity extends Activity
             ImageView imageView;
             if (convertView == null) {  // if it's not recycled, initialize some attributes
                 imageView = new ImageView(mContext);
-                imageView.setLayoutParams(new GridView.LayoutParams(85, 85));
+                imageView.setLayoutParams(new GridView.LayoutParams(100, 100));
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 imageView.setPadding(8, 8, 8, 8);
             } else {
@@ -114,6 +118,30 @@ public class MainActivity extends Activity
             return imageView;
         }
     }
+    
+    public void onRadioButtonClicked(View view) {
+        // Is the button now checked?
+        boolean checked = ((RadioButton) view).isChecked();
+        
+        // Check which radio button was clicked
+        switch(view.getId()) {
+            case R.id.makkelijk:
+                if (checked)
+                    // set easy
+                	difficulty = 0;
+                break;
+            case R.id.normaal:
+                if (checked)
+                	// set normal
+                	difficulty = 1;
+                break;
+            case R.id.moeilijk:
+                if (checked)
+                    // set hard
+                	difficulty = 2;
+                break;
+	            }
+	        }
     
     
     @Override
@@ -268,30 +296,7 @@ public class MainActivity extends Activity
 //        });
 //    }
 
-    public void onRadioButtonClicked(View view) {
-        // Is the button now checked?
-        boolean checked = ((RadioButton) view).isChecked();
-        
-        // Check which radio button was clicked
-        switch(view.getId()) {
-            case R.id.makkelijk:
-                if (checked)
-                    // set easy
-                	difficulty = 0;
-                break;
-            case R.id.normaal:
-                if (checked)
-                	// set normal
-                	difficulty = 1;
-                break;
-            case R.id.moeilijk:
-                if (checked)
-                    // set hard
-                	difficulty = 2;
-                break;
-        }
-    }
-    
+
     
     //naar Game
     public void toGame(View view)

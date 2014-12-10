@@ -15,7 +15,7 @@
         android:columnWidth="140dp"
         android:gravity="center"
         android:horizontalSpacing="10dp"
-        android:numColumns="3"
+        android:numColumns="2"
         
         android:verticalSpacing="10dp" >
     </GridView>
@@ -41,6 +41,7 @@
 
     <RadioGroup 
         xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/radioMoeilijkheid"
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
 	    android:orientation="vertical">
