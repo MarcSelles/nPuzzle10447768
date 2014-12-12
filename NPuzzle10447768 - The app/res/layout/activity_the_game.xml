@@ -181,26 +181,20 @@
 			android:layout_height="wrap_content"/>
 	</TableRow>
 
+    <Button
+        android:id="@+id/buttonRestart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Begin Opnieuw" 
+        android:onClick="restart"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" 
-		android:layout_gravity="center">
-
-        <Button
-            android:id="@+id/buttonRestart"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Restart" 
-            android:onClick="toRestart"/>
-
-        <Button
-            android:id="@+id/buttonMenu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Menu" 
-            android:onClick="toMenu"/>
-
-    </LinearLayout>
+    <Button
+        android:id="@+id/buttonMenu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:onClick="toMenu"
+        android:text="Menu" />
 
 </LinearLayout>

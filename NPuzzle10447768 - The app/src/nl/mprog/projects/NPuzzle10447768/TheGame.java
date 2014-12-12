@@ -23,39 +23,31 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.view.MenuItem;
 
-@SuppressLint("NewApi") public class TheGame extends Activity
-{
-	public Integer[] idsOfImages =
-        {
-            R.drawable.brooklyn_bridge,
-            R.drawable.diggrini_island,
-            R.drawable.manhattan_skyline,
-            R.drawable.qatar_skyline,
-            R.drawable.rush_hour,
-            R.drawable.singapore_city,
-            R.drawable.lake,
-            R.drawable.space,
-            R.drawable.waterfall,
-            R.drawable.real_place
-        };
+@SuppressLint("NewApi") public class TheGame extends Activity {
+	// Set the id's of the images
+	public Integer[] idsOfImages = { R.drawable.brooklyn_bridge,
+			R.drawable.diggrini_island, R.drawable.manhattan_skyline,
+			R.drawable.qatar_skyline, R.drawable.rush_hour,
+			R.drawable.singapore_city, R.drawable.lake, R.drawable.space,
+			R.drawable.waterfall, R.drawable.real_place };
 	
+	// Create the variables
     public static final String Difficulty = "difficulty",  
-    		NumberOfImage = "numberofimage",
-    		Condition = "condition",
-    		Sequence = "sequence",
-    		Preferences = "preferences" ;
+    		NumberOfImage = "numberofimage", Condition = "condition",
+    		Sequence = "sequence", Preferences = "preferences" ;
     SharedPreferences settings;
 
     public int reqHeight = 0, reqWidth = 0, condition = 0, 
-    		restart = 0, afterTimer = 0, rowEmptyBox = 0, 
-    		columnEmptyBox = 0, difficulty = 0, imagenumber = 0,
-    		dimensionTiles = 0;
+    		restart = 0, theTimer = 0, rowEmptyBox = 0, 
+    		columnEmptyBox = 0, difficulty = 0, numberOfImage = 0,
+    		boxesInRow = 0;
     
 
     public ImageView emptyBox;
-    public int[][] stateTiles  = new int[2][50];
+    public int[][] conditionOfBox  = new int[2][50];
 
-    public int[][] tileIds = {
+    // Create all possible tiles
+    public int[][] idOfBoxes = {
             {R.id.r1e1, R.id.r1e2, R.id.r1e3, R.id.r1e4, R.id.r1e5},
             {R.id.r2e1, R.id.r2e2, R.id.r2e3, R.id.r2e4, R.id.r2e5},
             {R.id.r3e1, R.id.r3e2, R.id.r3e3, R.id.r3e4, R.id.r3e5},
@@ -65,281 +57,220 @@ import android.view.MenuItem;
    
     
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_the_game);
-
-        //krijg info van intents
-        difficulty = getIntent().getExtras().getInt("difficulty");
-        imagenumber = getIntent().getExtras().getInt("imageID");
-        restart = getIntent().getExtras().getInt("restart");
-
+        
+        // Set the size of the game
         reqWidth = (int) (getResources().getDisplayMetrics().widthPixels * 0.8);
         reqHeight= (int) (getResources().getDisplayMetrics().widthPixels * 0.8);
-        
 
-        dimensionTiles = difficulty + 3;
-        Bitmap fullImageBitmap = null;
-        final BitmapFactory.Options options = new BitmapFactory.Options();
-        
-        //maak bitmap van img     
-        try
-        {
-            fullImageBitmap = BitmapFactory.decodeResource(getResources(), idsOfImages[imagenumber]);
-        }
-        catch(OutOfMemoryError e)
-        {
-            options.inSampleSize = 1;
-            try
-            {
-                fullImageBitmap = BitmapFactory.decodeResource(getResources(), idsOfImages[imagenumber], options); 
-            }
-            catch(OutOfMemoryError e2)
-            {
-                options.inSampleSize *= 2;
-                try
-                {
-                    fullImageBitmap = BitmapFactory.decodeResource(getResources(), idsOfImages[imagenumber], options);   
-                }
-                catch(OutOfMemoryError e3)
-                {
-                        options.inSampleSize *= 2;
-                        fullImageBitmap = BitmapFactory.decodeResource(getResources(), idsOfImages[imagenumber], options);   
-                }
-            }
-        }
-        
-        //scale bitmap met goede aspect
-        Bitmap scaledImageBitmap = scaleBm(fullImageBitmap);
-
-        //menubutton
-        maakMenu();
-
+        // Get the settings chosen by the user
+        numberOfImage = getIntent().getExtras().getInt("imageID");
+        difficulty = getIntent().getExtras().getInt("difficulty");
+        restart = getIntent().getExtras().getInt("restart");
         settings = getSharedPreferences(Preferences, 0);
         condition = settings.getInt(Condition,0);
 
+        boxesInRow = difficulty + 3;
+        
+        Bitmap bitmapImage = makeBitmap();
+        
+        // Scaling the bitmap
+        Bitmap scaleBitmapImage = scalingBitmap(bitmapImage);
+
+        makeMenu();
+
+        // When there was an earlier condition
         if(condition == 1)
         {
-            //stateTiles vullen met tiles van eerdere state
-            String savedString = settings.getString(Sequence, "");
-            StringTokenizer st = new StringTokenizer(savedString, ",");
-            if(savedString != null && !savedString.isEmpty())
-            {
-                for (int j = 0; j < 50; j++)
-                {
-                    stateTiles[1][j] = Integer.parseInt(st.nextToken());
-                    stateTiles[0][j] = Integer.parseInt(st.nextToken());
+            // Fill boxes with earlier condition
+            String oldString = settings.getString(Sequence, "");
+            StringTokenizer strWithoutComma = new StringTokenizer(oldString, ",");
+            if(!oldString.isEmpty() && oldString != null) {
+                for (int pos = 0; pos <= 49; pos++) {
+                    conditionOfBox[1][pos] = Integer.parseInt(strWithoutComma.nextToken());
+                    conditionOfBox[0][pos] = Integer.parseInt(strWithoutComma.nextToken());
                 }
             }
         }
-        //maak tiles
-        createBitmapPieces(scaledImageBitmap, difficulty);
-        afterTimer = 0;
+        
+        // Making the boxes
+        createBitmapBoxes(scaleBitmapImage, difficulty);
+        theTimer = 0;
         settings = getSharedPreferences(Preferences, 0);
         condition = settings.getInt(Condition,0);
-        if(condition != 1)
-        {
-            emptyBox = (ImageView) findViewById(tileIds[0][0]);
-            //laat tiles even zien
-            Runnable r = new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    hussleTiles();
-                    afterTimer = 1;
-                }
-            };
-            Handler h = new Handler();
-            h.postDelayed(r, 5000);
+        if(condition == 0) {
+            makeGame();
         }
-        else
-        {
-            afterTimer = 1;
+        else {
+            theTimer = 1;
         }
     }
 
-
-    
-
-    @Override
-    public void onPause()
-    {
-        super.onPause();
-        settings = getSharedPreferences(Preferences, 0);
-        Editor editor = settings.edit();
-        editor.clear();
-        if(restart != 1)
-        {
-            editor.putInt(Difficulty, difficulty);
-            editor.putInt(NumberOfImage, imagenumber);
-            editor.putInt(Condition, 1);
-
-            String savedString = "";
-
-            StringBuilder str = new StringBuilder();
-
-            for (int j = 0; j < 50; j++)
-            {
-                str.append(stateTiles[1][j]).append(",");
-                str.append(stateTiles[0][j]).append(",");
-                savedString = str.toString();
+    public void makeGame() {
+    	// Show solution, then hussle
+    	emptyBox = (ImageView) findViewById(idOfBoxes[0][0]);
+        Runnable sol = new Runnable() {
+            @Override
+            public void run() {
+                hussleBoxes();
+                theTimer = 1;
             }
-            editor.putString(Sequence, savedString);
-            editor.commit();
+        };
+        Handler theHussle = new Handler();
+        theHussle.postDelayed(sol, 5000);
+    }
+    
+    public void hussleBoxes() {
+        Random random = new Random();
+        // Make sure that every box has a random position
+        for (int numOfRandoms = 0; numOfRandoms < 3000; numOfRandoms++) {
+        	int randomFir = random.nextInt(boxesInRow);
+        	int randomSec = random.nextInt(boxesInRow);
+            ImageView box;
+            box = (ImageView) findViewById(idOfBoxes[randomFir][randomSec]);
+            moveBox(box);
         }
     }
 
-
-
-
-    public Bitmap scaleBm(Bitmap bitmap)
-    {
-        int fullImageBitmapWidth = bitmap.getWidth(), fullImageBitmapHeight = bitmap.getHeight();
-        float scale;
-        //scale x en y !met aspect behouden!
-        float scaledImageBitmapx = (float) reqWidth / fullImageBitmapWidth;
-        float scaledImageBitmapy = (float) reqHeight / fullImageBitmapHeight;
-
-        //kijk welke dimensie het grootst is
-        if(scaledImageBitmapx > scaledImageBitmapy)
-        {
-            scale = scaledImageBitmapx;
-        } else
-        {
-            scale = scaledImageBitmapy;
+    public Bitmap makeBitmap() {
+    	Bitmap bitmapImage = null;
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+            
+        try {
+            bitmapImage = BitmapFactory.decodeResource(getResources(), idsOfImages[numberOfImage]);
         }
+        catch(OutOfMemoryError e) {
+            options.inSampleSize = 1;
+            try {
+                bitmapImage = BitmapFactory.decodeResource(getResources(), idsOfImages[numberOfImage], options); 
+            }
+            catch(OutOfMemoryError e2) {
+                options.inSampleSize *= 2;
+                try {
+                    bitmapImage = BitmapFactory.decodeResource(getResources(), idsOfImages[numberOfImage], options);   
+                }
+                catch(OutOfMemoryError e3) {
+                        options.inSampleSize *= 2;
+                        bitmapImage = BitmapFactory.decodeResource(getResources(), idsOfImages[numberOfImage], options);   
+                }
+            }
+        }
+        return bitmapImage;
+    }
 
-        //scale
-        float scaledWidth = scale * fullImageBitmapWidth;
-        float scaledHeight = scale * fullImageBitmapHeight;
 
-        //pak linksboven punt in het midden  
-        float puntx = (reqWidth - scaledWidth) / 2;
-        float punty = (reqHeight - scaledHeight) / 2;
+    public Bitmap scalingBitmap(Bitmap bitmap) {
+        int  heightBitmap = bitmap.getHeight(), widthBitmap = bitmap.getWidth();
+        float scaledWidth;
+        float scaledHeight;
+        float scaleBitmapWidth = (float) reqWidth / widthBitmap;
+        float scaleBitmapHeight = (float) reqHeight / heightBitmap;
 
-        //snijdt vierkant uit te grote gescalede bitmap
-        RectF vierkant = new RectF(puntx, punty, puntx + scaledWidth, punty + scaledHeight);
+        // Check whether width or height is larger
+        if(scaleBitmapWidth < scaleBitmapHeight) {
+        	scaledWidth = scaleBitmapHeight * widthBitmap;
+            scaledHeight = scaleBitmapHeight * heightBitmap;} 
+        else {
+        	scaledWidth = scaleBitmapWidth * widthBitmap;
+            scaledHeight = scaleBitmapWidth * heightBitmap;}
 
-        //maak bitmap van vierkant
+        // Get begin and end y and x of rectangle
+        float beginY = (reqHeight - scaledHeight) / 2;
+        float beginX = (reqWidth - scaledWidth) / 2;
+        float endY = beginY + scaledHeight;
+        float endX = beginX + scaledWidth;
+
+        // Make rectangle and Bitmap
+        RectF rectangle = new RectF(beginX, beginY, endX, endY);
         Bitmap scaledBitmap = Bitmap.createBitmap(reqWidth, reqHeight, bitmap.getConfig());
         Canvas canvas = new Canvas(scaledBitmap);
-        canvas.drawBitmap(bitmap, null, vierkant, null);
+        canvas.drawBitmap(bitmap, null, rectangle, null);
 
         return scaledBitmap;
-
     }
 
     
-    
-
-    public void hussleTiles()
-    {
-        Random r = new Random();
-        int count = 0, randj = 0, randi = 0;
-        while(count < 2000)
-        {
-            randj = r.nextInt(dimensionTiles);
-            randi = r.nextInt(dimensionTiles);
-            ImageView v;
-            v = (ImageView) findViewById(tileIds[randi][randj]);
-            onClickTileMove(v);   
-            count++;
-        }
-    }
-
-    
-    
-    
-    public void createBitmapPieces(Bitmap bitmap, int i)
-    {
-        int pt1 = (int)(bitmap.getWidth()/dimensionTiles);
-        int pt2 = (int)(bitmap.getHeight()/dimensionTiles);
-        final int difficulty = i;
-        if(difficulty == 0)
-        {
-            final Bitmap [][] bitmapTiles =
-                {
-                //bitmap stukken boven
-                {Bitmap.createBitmap(bitmap, 1,1,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1,1,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1*2,1,pt1,pt2)},
-                //bitmaps stukken midden
-                {Bitmap.createBitmap(bitmap, 1,pt2,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1,pt2,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1*2,pt2,pt1,pt2)},
-                //bitmaps stukken onder
-                {Bitmap.createBitmap(bitmap, 1,pt2+pt2,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1,pt2+pt2,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1*2,pt2+pt2,pt1,pt2)}
-                };
-            createTiles(bitmapTiles);
-        }
-        else if(difficulty == 1)
-        {
-            
-            Bitmap [][] bitmapTiles =
-                {
-                //bitmap stukken boven
-                {Bitmap.createBitmap(bitmap, 1,1,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1,1,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1*2,1,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1*3,1,pt1,pt2)},
-                //bitmaps stukken midden
-                {Bitmap.createBitmap(bitmap, 1,pt2,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1,pt2,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1*2,pt2,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1*3,pt2,pt1,pt2)},
-                //bitmaps stukken onder
-                {Bitmap.createBitmap(bitmap, 1,pt2+pt2,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1,pt2+pt2,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1*2,pt2+pt2,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1*3,pt2*2,pt1,pt2)},
+    public void createBitmapBoxes(Bitmap bitmap, int dif) {
+        int boxHeight = (int)(bitmap.getHeight()/boxesInRow), boxWidth = (int)(bitmap.getWidth()/boxesInRow);
+     // Create upper, middle and under rows
+        if(dif == 0) {
+        	// Three rows for easy
+            final Bitmap [][] boxesBitmap = {
+                {Bitmap.createBitmap(bitmap, 1,1,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth,1,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth*2,1,boxWidth,boxHeight)},
                 
-                {Bitmap.createBitmap(bitmap, 1,pt2*3,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1,pt2*3,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1*2,pt2*3,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1*3,pt2*3,pt1,pt2)}  
+                {Bitmap.createBitmap(bitmap, 1,boxHeight,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth,boxHeight,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth*2,boxHeight,boxWidth,boxHeight)},
+
+                {Bitmap.createBitmap(bitmap, 1,boxHeight+boxHeight,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth,boxHeight+boxHeight,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth*2,boxHeight+boxHeight,boxWidth,boxHeight)}
                 };
-            createTiles(bitmapTiles);
+            createBoxes(boxesBitmap);
         }
-        else if(difficulty == 2)
-        {
-            
-            Bitmap [][] bitmapTiles =
-                {
-                {Bitmap.createBitmap(bitmap, 1,1,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1,1,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1*2,1,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1*3,1,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1*4,1,pt1,pt2)},
-
-                {Bitmap.createBitmap(bitmap, 1,pt2,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1,pt2,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1*2,pt2,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1*3,pt2,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1*4,pt2,pt1,pt2)},
-
-                {Bitmap.createBitmap(bitmap, 1,pt2*2,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1,pt2*2,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1*2,pt2*2,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1*3,pt2*2,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1*4,pt2*2,pt1,pt2)},
-
-                {Bitmap.createBitmap(bitmap, 1,pt2*3,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1,pt2*3,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1*2,pt2*3,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1*3,pt2*3,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1*4,pt2*3,pt1,pt2)},
-
-                {Bitmap.createBitmap(bitmap, 1,pt2*4,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1,pt2*4,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1*2,pt2*4,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1*3,pt2*4,pt1,pt2),
-                Bitmap.createBitmap(bitmap, pt1*4,pt2*4,pt1,pt2)}
+        else if(dif == 1) {
+        	// Four rows for normal
+            Bitmap [][] boxesBitmap = {
+                {Bitmap.createBitmap(bitmap, 1,1,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth,1,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth*2,1,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth*3,1,boxWidth,boxHeight)},
+                
+                {Bitmap.createBitmap(bitmap, 1,boxHeight,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth,boxHeight,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth*2,boxHeight,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth*3,boxHeight,boxWidth,boxHeight)},
+                
+                {Bitmap.createBitmap(bitmap, 1,boxHeight+boxHeight,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth,boxHeight+boxHeight,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth*2,boxHeight+boxHeight,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth*3,boxHeight*2,boxWidth,boxHeight)},
+                
+                {Bitmap.createBitmap(bitmap, 1,boxHeight*3,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth,boxHeight*3,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth*2,boxHeight*3,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth*3,boxHeight*3,boxWidth,boxHeight)}  
                 };
-            createTiles(bitmapTiles);
+            createBoxes(boxesBitmap);
+        }
+        else {
+        	// Five rows for hard
+            Bitmap [][] boxesBitmap = {
+                {Bitmap.createBitmap(bitmap, 1,1,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth,1,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth*2,1,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth*3,1,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth*4,1,boxWidth,boxHeight)},
+
+                {Bitmap.createBitmap(bitmap, 1,boxHeight,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth,boxHeight,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth*2,boxHeight,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth*3,boxHeight,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth*4,boxHeight,boxWidth,boxHeight)},
+
+                {Bitmap.createBitmap(bitmap, 1,boxHeight*2,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth,boxHeight*2,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth*2,boxHeight*2,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth*3,boxHeight*2,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth*4,boxHeight*2,boxWidth,boxHeight)},
+
+                {Bitmap.createBitmap(bitmap, 1,boxHeight*3,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth,boxHeight*3,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth*2,boxHeight*3,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth*3,boxHeight*3,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth*4,boxHeight*3,boxWidth,boxHeight)},
+
+                {Bitmap.createBitmap(bitmap, 1,boxHeight*4,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth,boxHeight*4,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth*2,boxHeight*4,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth*3,boxHeight*4,boxWidth,boxHeight),
+                Bitmap.createBitmap(bitmap, boxWidth*4,boxHeight*4,boxWidth,boxHeight)}
+                };
+            createBoxes(boxesBitmap);
         }
         
     }
@@ -347,63 +278,51 @@ import android.view.MenuItem;
     
     
     
-    public void createTiles(Bitmap[][] bitmap)
-    {
+    public void createBoxes(Bitmap[][] bitmap) {
+        int countOfCond = 0, xCondition = 0, yCondition = 0,
+        		emptyBoxesOfset = 6;
         final Bitmap[][] bitmapTiles = bitmap;
-        int statesCount = 0;
-        int stateX = 0;
-        int stateY = 0;
-        int offsetEmptyTile = 6;
-        for(int i = 0; i < dimensionTiles; i++)
-        {
-            for(int j = 0; j < dimensionTiles; j++)
-            {
-                ImageView imageTile;
-                imageTile = (ImageView) findViewById(tileIds[i][j]);
-                if(condition == 0)
-                {
-                    if(i == 0 && j == 0)
-                    {
-                        imageTile.setImageBitmap(bitmapTiles[i][j]);
-                        imageTile.setTag(bitmapTiles[i][j]);  
-                        imageTile.setVisibility(View.INVISIBLE);
+        // Every position has to be made
+        for(int rowWidth = 0; rowWidth < boxesInRow; rowWidth++) {
+            for(int rowHeight = 0; rowHeight < boxesInRow; rowHeight++) {
+            	// Make the imageview of the box
+                ImageView boxImage;
+                boxImage = (ImageView) findViewById(idOfBoxes[rowWidth][rowHeight]);
+                if(condition == 0) {
+                    if(rowHeight == 0 && rowWidth == 0 ) {
+                    	boxImage.setTag(bitmapTiles[rowWidth][rowHeight]);
+                        boxImage.setImageBitmap(bitmapTiles[rowWidth][rowHeight]);
+                        boxImage.setVisibility(View.INVISIBLE);
                     }
-                    else
-                    {
-                        imageTile.setImageBitmap(bitmapTiles[i][j]);
-                        imageTile.setTag(bitmapTiles[i][j]);  
+                    else {
+                    	boxImage.setTag(bitmapTiles[rowWidth][rowHeight]);
+                        boxImage.setImageBitmap(bitmapTiles[rowWidth][rowHeight]);
                     }
                 }
-                else if(condition == 1)
-                {
-                    stateY = stateTiles[1][statesCount];
-                    stateX = stateTiles[0][statesCount];
-                    if(stateX < 0)
-                    {
-                        imageTile.setImageBitmap(bitmapTiles[stateX+offsetEmptyTile][stateY+offsetEmptyTile]);
-                        imageTile.setTag(bitmapTiles[stateX+offsetEmptyTile][stateY+offsetEmptyTile]);
-                        emptyBox = (ImageView) findViewById(tileIds[i][j]);
-                        rowEmptyBox = i;
-                        columnEmptyBox = j;
-                        imageTile.setVisibility(View.INVISIBLE);
+                else {
+                    yCondition = conditionOfBox[1][countOfCond];
+                    xCondition = conditionOfBox[0][countOfCond];
+                    countOfCond++;
+                    if(xCondition < 0) {
+                        boxImage.setImageBitmap(bitmapTiles[xCondition+emptyBoxesOfset][yCondition+emptyBoxesOfset]);
+                        boxImage.setTag(bitmapTiles[xCondition+emptyBoxesOfset][yCondition+emptyBoxesOfset]);
+                        emptyBox = (ImageView) findViewById(idOfBoxes[rowWidth][rowHeight]);
+                        columnEmptyBox = rowHeight;
+                        rowEmptyBox = rowWidth;
+                        boxImage.setVisibility(View.INVISIBLE);
                     }
-                    else
-                    {
-                        imageTile.setImageBitmap(bitmapTiles[stateX][stateY]);
-                        imageTile.setTag(bitmapTiles[stateX][stateY]);
+                    else {
+                    	boxImage.setTag(bitmapTiles[xCondition][yCondition]);
+                        boxImage.setImageBitmap(bitmapTiles[xCondition][yCondition]);
                     }
-
-                    statesCount++;
                 }
-                imageTile.setOnClickListener(new OnClickListener()
-                {
+                // Make action when clicked
+                boxImage.setOnClickListener(new OnClickListener() {
                     @Override
-                    public void onClick(View v)
-                    {
-                        if(afterTimer == 1)
-                        {
-                            onClickTileMove(v);
-                            checkEndGame(bitmapTiles);
+                    public void onClick(View v) {
+                        if(theTimer == 1) {
+                            moveBox(v);
+                            checkForEnd(bitmapTiles);
                         }
                     }
                 });
@@ -414,40 +333,33 @@ import android.view.MenuItem;
     
     
     
-    public void onClickTileMove(View v)
-    {
-        int x = -1, y= -1;
-        //als het niet de "lege" tile is
-        if(v.getVisibility() == View.VISIBLE)
-        {
-            //loop over tile ids voor coordinaten geklikte view
-            for(int i = 0; i < dimensionTiles; i++)
-            {
-                for(int j = 0; j < dimensionTiles; j++)
-                {
-                    if(v.getId()==tileIds[i][j])
-                    {
-                        x = i;
-                        y = j;
+    public void moveBox(View view) {
+        int posX = -1, posY= -1;
+        // Box cannot be the empty box
+        if(view.getVisibility() == View.VISIBLE) {
+            // Get coordinate by id's
+            for(int x = 0; x < boxesInRow; x++) {
+                for(int y = 0; y < boxesInRow; y++) {
+                    if(view.getId()==idOfBoxes[x][y]) {
+                        posX = x;
+                        posY = y;
                     }
                 }
             }
-            //kijk of lege tile eromheen is
-            if(x-1 == rowEmptyBox && y == columnEmptyBox ||
-                    x+1 == rowEmptyBox && y == columnEmptyBox ||
-                    x == rowEmptyBox && y-1 == columnEmptyBox ||
-                    x == rowEmptyBox && y+1 == columnEmptyBox)
-            {
-                //wissel views om
-
-                ImageView imageClicked = (ImageView) findViewById(tileIds[x][y]);
+            // Check for empty neighbor box
+            if(posX == rowEmptyBox && posY+1 == columnEmptyBox ||
+            		posX+1 == rowEmptyBox && posY == columnEmptyBox ||
+            		posY ==columnEmptyBox && posX-1 == rowEmptyBox  ||
+                    posX == rowEmptyBox && posY-1 == columnEmptyBox ) {
+            	// Swap the boxes
+            	rowEmptyBox = posX;
+                columnEmptyBox = posY;
+                ImageView imageClicked = (ImageView) findViewById(idOfBoxes[posX][posY]);
+                imageClicked.setVisibility(View.INVISIBLE);
                 Bitmap bitmap = ((BitmapDrawable)imageClicked.getDrawable()).getBitmap();
                 emptyBox.setImageBitmap(bitmap);
                 emptyBox.setVisibility(View.VISIBLE);
-                imageClicked.setVisibility(View.INVISIBLE);
                 emptyBox = imageClicked;
-                rowEmptyBox = x;
-                columnEmptyBox = y;
             }
         }
     }
@@ -455,63 +367,45 @@ import android.view.MenuItem;
 
     
     
-    public void checkEndGame(Bitmap [][] bitmapArray)
-    {
-        //staan alle bitmaps in volgorde
-        //kijk naar elke tileID welke bitmap erin staat
-        //vergelijk deze met bitmapTiles
-        //als gelijk dan is alles in volgorde en end game
-        //state opslaan met bitmapTiles id
-        //
-        int aantalTiles = dimensionTiles*dimensionTiles;
-        int count = 0;
-        int tileCount = 0;
-        int offsetEmptyTile = 6;
-        for(int i = 0; i < dimensionTiles; i++)
-        {
-            for(int j = 0; j < dimensionTiles; j++)
-            {
-                ImageView viewChecked = (ImageView) findViewById(tileIds[i][j]);
-                Bitmap bitmapView = ((BitmapDrawable)viewChecked.getDrawable()).getBitmap();
-                Bitmap bitmapOriginalView = bitmapArray[i][j];
-
-                if(bitmapView.sameAs(bitmapOriginalView))
-                {
-                    count++;
+    public void checkForEnd(Bitmap [][] bitmapArray) {
+        int totalBoxes = boxesInRow*boxesInRow, rightBoxes = 0,
+        		countBox = 0, emptyBoxOfset = 6;
+        for(int x1 = 0; x1 < boxesInRow; x1++) {
+            for(int y1 = 0; y1 < boxesInRow; y1++) {
+                ImageView checkView = (ImageView) findViewById(idOfBoxes[x1][y1]);
+                Bitmap bitOriginal = bitmapArray[x1][y1];
+                Bitmap bitView = ((BitmapDrawable)checkView.getDrawable()).getBitmap();
+                // Check for the same box as box in solution
+                if(bitView.sameAs(bitOriginal)) {
+                    rightBoxes++;
                 }
-                //loop voor state
-                for(int k = 0; k < dimensionTiles; k++)
-                {
-                    for(int l = 0; l < dimensionTiles; l++)
-                    {
-                        bitmapOriginalView = bitmapArray[k][l];
-                        if(bitmapView.sameAs(bitmapOriginalView))
-                        {
-                            stateTiles[0][tileCount]= k;
-                            stateTiles[1][tileCount] = l;
+                for(int x2 = 0; x2 < boxesInRow; x2++) {
+                    for(int y2 = 0; y2 < boxesInRow; y2++) {
+                        bitOriginal = bitmapArray[x2][y2];
+                        if(bitView.sameAs(bitOriginal)) {
+                            conditionOfBox[0][countBox]= x2;
+                            conditionOfBox[1][countBox] = y2;
                         }
-                        //als het de lege tile is
-                        if(viewChecked.getVisibility() == View.INVISIBLE)
-                        {
-                            stateTiles[0][tileCount]= k-offsetEmptyTile;
-                            stateTiles[1][tileCount] = l-offsetEmptyTile;
+                        // When empty box
+                        if(checkView.getVisibility() == View.INVISIBLE) {
+                            conditionOfBox[0][countBox]= x2-emptyBoxOfset;
+                            conditionOfBox[1][countBox] = y2-emptyBoxOfset;
                         }
                     }
                 }
-                tileCount++;
+                countBox++;
             }
         }
-        if(count == (aantalTiles-1))
-        {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(R.string.endgame_text);
-            builder.setTitle(R.string.endgame_title);
-            builder.setPositiveButton(R.string.endgame_button, 
-                    new DialogInterface.OnClickListener()
-            {
+        // If all the boxes are right, then alert
+        if(rightBoxes == (totalBoxes-1)) {
+            AlertDialog.Builder ending = new AlertDialog.Builder(this);
+            ending.setMessage(R.string.endgame_text);
+            ending.setTitle(R.string.endgame_title);
+            // Start a new game
+            ending.setPositiveButton(R.string.endgame_button, 
+                    new DialogInterface.OnClickListener() {
                 @Override
-                public void onClick(DialogInterface arg0, int arg1)
-                {
+                public void onClick(DialogInterface dia, int num) {
                     restart = 1;
                     settings = getSharedPreferences(Preferences, 0);
                     Editor editor = settings.edit();
@@ -523,39 +417,77 @@ import android.view.MenuItem;
                     finish();
                 }
             });
-            AlertDialog alertDialog = builder.create();
-            alertDialog.show();
+            AlertDialog theEnd = ending.create();
+            theEnd.show();
         }
+    }    
 
-    }
-
-
-    
-
-    //maak een menu bij de menubutton
-    public void maakMenu()
-    {
-        final Button buttonMenu = (Button) findViewById(R.id.buttonMenu);  
-        buttonMenu.setOnClickListener(new OnClickListener()
-        {  
+    public void makeMenu() {
+        final Button menuButton = (Button) findViewById(R.id.buttonMenu);  
+        menuButton.setOnClickListener(new OnClickListener() {  
             @Override  
-            public void onClick(View v)
-            {  
-                if(afterTimer == 1)
-                {
-                    PopupMenu popup = new PopupMenu(TheGame.this, buttonMenu);
-                    popup.getMenuInflater().inflate(R.menu.solution, popup.getMenu()); 
-                    popup.show();  
+            public void onClick(View v) {  
+                if(theTimer == 1) {
+                    PopupMenu choice = new PopupMenu(TheGame.this, menuButton);
+                    // Different menu for different difficulties
+                    if (difficulty == 0) {
+                    	choice.getMenuInflater().inflate(R.menu.menu2, choice.getMenu());
+                    }
+                    else if (difficulty == 1) {
+                    	choice.getMenuInflater().inflate(R.menu.menu1, choice.getMenu());
+                    }
+                    else {
+                    	choice.getMenuInflater().inflate(R.menu.menu3, choice.getMenu());
+                    }
+                    choice.show();  
                 }
             }  
         });
     }
 
 
+
+      
+    public void easier(MenuItem mItem)  {
+    	// Restart the game
+        restart = 1;
+        settings = getSharedPreferences(Preferences, 0);
+        Editor editor = settings.edit();
+        editor.clear();
+        editor.putInt(Condition, 0);
+        editor.commit();
+        // Set difficulty one step easier
+        difficulty -= 1;
+        // Make new intent with new difficulty
+        Intent intent = new Intent(this, TheGame.class);
+        intent.putExtra("imageID", numberOfImage);
+        intent.putExtra("difficulty", difficulty);
+        startActivity(intent);
+        finish();
+    }
+
     
     
-    public void toStart(MenuItem item)
-    {
+
+    public void harder(MenuItem item) {
+    	// Restart the game
+        restart = 1;
+        settings = getSharedPreferences(Preferences, 0);
+        Editor editor = settings.edit();
+        editor.clear();
+        editor.putInt(Condition, 0);
+        editor.commit();
+        // Set difficulty one step harder
+        difficulty += 1;
+        // Make new intent with new difficulty
+        Intent intent = new Intent(this, TheGame.class);
+        intent.putExtra("imageID", numberOfImage);
+        intent.putExtra("difficulty", difficulty);
+        startActivity(intent);
+        finish();
+    }
+    
+    public void start(MenuItem mItem) {
         restart = 1;
         settings = getSharedPreferences(Preferences, 0);
         Editor editor = settings.edit();
@@ -567,69 +499,47 @@ import android.view.MenuItem;
         finish();
     }
 
-
     
-    
-    public void toMakkelijker(MenuItem item)
-    {
+    public void restart(View v) {
         restart = 1;
         settings = getSharedPreferences(Preferences, 0);
         Editor editor = settings.edit();
         editor.clear();
         editor.putInt(Condition, 0);
         editor.commit();
-        if(difficulty != 0)
-        {
-            difficulty -= 1;
+        // Send the same settings
+        Intent intent = new Intent(this, TheGame.class);
+        intent.putExtra("imageID", numberOfImage);
+        intent.putExtra("difficulty", difficulty);
+        startActivity(intent);
+        finish();
+    }
+    
+    @Override
+    public void onPause() {
+        super.onPause();
+        settings = getSharedPreferences(Preferences, 0);
+        // First clean the edit
+        Editor edit = settings.edit();
+        edit.clear();
+        if(restart == 0) {
+        	// Save the settings
+        	String savedString = "";
+            edit.putInt(Difficulty, difficulty);
+            edit.putInt(NumberOfImage, numberOfImage);
+            edit.putInt(Condition, 1);
+
+            StringBuilder saveString = new StringBuilder();
+            
+            // Save the positions of the boxes
+            for (int pos = 0; pos < 50; pos++) {
+                saveString.append(conditionOfBox[0][pos]).append(",");
+                saveString.append(conditionOfBox[1][pos]).append(",");
+                savedString = saveString.toString();
+            }
+            edit.putString(Sequence, savedString);
+            edit.commit();
         }
-        //stuur id van img mee en difficulty
-        Intent intent = new Intent(this, TheGame.class);
-        intent.putExtra("imageID", imagenumber);
-        intent.putExtra("difficulty", difficulty);
-        startActivity(intent);
-        finish();
     }
+}
 
-    
-    
-
-    public void toMoeilijker(MenuItem item)
-    {
-        restart = 1;
-        settings = getSharedPreferences(Preferences, 0);
-        Editor editor = settings.edit();
-        editor.clear();
-        editor.putInt(Condition, 0);
-        editor.commit();
-        if(difficulty != 2)
-        {
-            difficulty += 1;
-        }
-        //stuur id van img mee en difficulty
-        Intent intent = new Intent(this, TheGame.class);
-        intent.putExtra("imageID", imagenumber);
-        intent.putExtra("difficulty", difficulty);
-        startActivity(intent);
-        finish();
-    }
-
-
-    
-    
-    //restart deze activity met difficulty etc
-    public void toRestart(View v)
-    {
-        restart = 1;
-        settings = getSharedPreferences(Preferences, 0);
-        Editor editor = settings.edit();
-        editor.clear();
-        editor.putInt(Condition, 0);
-        editor.commit();
-        //stuur id van img mee en difficulty
-        Intent intent = new Intent(this, TheGame.class);
-        intent.putExtra("imageID", imagenumber);
-        intent.putExtra("difficulty", difficulty);
-        startActivity(intent);
-        finish();
-    }
-}

@@ -18,25 +18,12 @@
         android:numColumns="2"
         android:verticalSpacing="10dp" >
     </GridView>
-    
-    <!-- <ScrollView
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_weight="0.3" >
-        <LinearLayout
-            android:id="@+id/theGallery"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            />
-    </ScrollView>
-    -->
 
     <TextView
         android:id="@+id/afbeeldingID"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Gekozen Afbeelding: 1" />
+        android:text="Afbeelding: 1" />
 
     <RadioGroup 
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -62,17 +49,11 @@
 	        android:onClick="onRadioButtonClicked"/>
 	</RadioGroup>
 
-    <TextView
-        android:id="@+id/textMoeilijkheid"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Moeilijkheid: Normaal" />
-
     <Button
         android:id="@+id/startButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Start" 
+        android:text="Begin Spel" 
         android:onClick="beginGame"/>
 
 </LinearLayout>
