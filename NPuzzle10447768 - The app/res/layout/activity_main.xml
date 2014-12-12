@@ -23,7 +23,7 @@
         android:id="@+id/afbeeldingID"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Afbeelding: 1" />
+        android:text="@string/afbeelding" />
 
     <RadioGroup 
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -34,18 +34,18 @@
 	    <RadioButton android:id="@+id/makkelijk"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:text="Makkelijk"
+	        android:text="@string/makkelijk"
 	        android:onClick="onRadioButtonClicked"/>
 	    <RadioButton android:id="@+id/normaal"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:text="Normaal"
+	        android:text="@string/normaal"
 	        android:checked="true"
 	        android:onClick="onRadioButtonClicked"/>
 	    <RadioButton android:id="@+id/moeilijk"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:text="Moeilijk"
+	        android:text="@string/moeilijk"
 	        android:onClick="onRadioButtonClicked"/>
 	</RadioGroup>
 
@@ -53,7 +53,7 @@
         android:id="@+id/startButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Begin Spel" 
+        android:text="@string/begin" 
         android:onClick="beginGame"/>
 
 </LinearLayout>

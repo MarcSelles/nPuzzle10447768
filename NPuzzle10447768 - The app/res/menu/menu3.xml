@@ -5,8 +5,8 @@
         android:onClick="start"/>  
       
     <item  
-        android:id="@+id/makkelijker"  
-        android:title="@string/easier"
+        android:id="@+id/moeilijker"  
+        android:title="@string/harder"
         android:onClick="harder"/>  
           
 </menu> 

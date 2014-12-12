@@ -125,7 +125,7 @@ import android.view.MenuItem;
     public void hussleBoxes() {
         Random random = new Random();
         // Make sure that every box has a random position
-        for (int numOfRandoms = 0; numOfRandoms < 3000; numOfRandoms++) {
+        for (int numOfRandoms = 0; numOfRandoms < 5000; numOfRandoms++) {
         	int randomFir = random.nextInt(boxesInRow);
         	int randomSec = random.nextInt(boxesInRow);
             ImageView box;
@@ -160,7 +160,6 @@ import android.view.MenuItem;
         return bitmapImage;
     }
 
-
     public Bitmap scalingBitmap(Bitmap bitmap) {
         int  heightBitmap = bitmap.getHeight(), widthBitmap = bitmap.getWidth();
         float scaledWidth;
@@ -191,7 +190,6 @@ import android.view.MenuItem;
         return scaledBitmap;
     }
 
-    
     public void createBitmapBoxes(Bitmap bitmap, int dif) {
         int boxHeight = (int)(bitmap.getHeight()/boxesInRow), boxWidth = (int)(bitmap.getWidth()/boxesInRow);
      // Create upper, middle and under rows
@@ -275,9 +273,6 @@ import android.view.MenuItem;
         
     }
 
-    
-    
-    
     public void createBoxes(Bitmap[][] bitmap) {
         int countOfCond = 0, xCondition = 0, yCondition = 0,
         		emptyBoxesOfset = 6;
@@ -330,9 +325,6 @@ import android.view.MenuItem;
         }
     }
     
-    
-    
-    
     public void moveBox(View view) {
         int posX = -1, posY= -1;
         // Box cannot be the empty box
@@ -364,9 +356,6 @@ import android.view.MenuItem;
         }
     }
 
-
-    
-    
     public void checkForEnd(Bitmap [][] bitmapArray) {
         int totalBoxes = boxesInRow*boxesInRow, rightBoxes = 0,
         		countBox = 0, emptyBoxOfset = 6;
@@ -431,13 +420,13 @@ import android.view.MenuItem;
                     PopupMenu choice = new PopupMenu(TheGame.this, menuButton);
                     // Different menu for different difficulties
                     if (difficulty == 0) {
-                    	choice.getMenuInflater().inflate(R.menu.menu2, choice.getMenu());
+                    	choice.getMenuInflater().inflate(R.menu.menu3, choice.getMenu());
                     }
                     else if (difficulty == 1) {
                     	choice.getMenuInflater().inflate(R.menu.menu1, choice.getMenu());
                     }
                     else {
-                    	choice.getMenuInflater().inflate(R.menu.menu3, choice.getMenu());
+                    	choice.getMenuInflater().inflate(R.menu.menu2, choice.getMenu());
                     }
                     choice.show();  
                 }
@@ -445,9 +434,6 @@ import android.view.MenuItem;
         });
     }
 
-
-
-      
     public void easier(MenuItem mItem)  {
     	// Restart the game
         restart = 1;
@@ -466,12 +452,8 @@ import android.view.MenuItem;
         finish();
     }
 
-    
-    
-
     public void harder(MenuItem item) {
-    	// Restart the game
-        restart = 1;
+    	restart = 1;
         settings = getSharedPreferences(Preferences, 0);
         Editor editor = settings.edit();
         editor.clear();
@@ -498,8 +480,7 @@ import android.view.MenuItem;
         startActivity(intent);
         finish();
     }
-
-    
+  
     public void restart(View v) {
         restart = 1;
         settings = getSharedPreferences(Preferences, 0);
@@ -541,5 +522,4 @@ import android.view.MenuItem;
             edit.commit();
         }
     }
-}
-
+}

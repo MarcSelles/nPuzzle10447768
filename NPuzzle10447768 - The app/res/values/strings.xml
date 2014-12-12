@@ -8,7 +8,7 @@
     <string name="title_activity_the_game">TheGame</string>
     <string name="photoGame">photo of game</string>
     <string name="title_activity_playing">Playing</string>
-    <string name="menu">MENU</string>
+    <string name="menu">Menu</string>
     <string name="title_activity_the_end">TheEnd</string>
     <string name="endgame_title">Gefeliciteerd!!!</string>
     <string name="endgame_text">U heeft het spel voltooid!</string>
@@ -17,6 +17,13 @@
     <string name="easier">Makkelijker</string>
     <string name="harder">Moeilijker</string>
     <string name="returnGame">Terug naar spel</string>
+    <string name="afbeelding">Afbeelding: 1</string>
+    <string name="makkelijk">Makkelijk</string>
+    <string name="normaal">Normaal</string>
+    <string name="moeilijk">Moeilijk</string>
+    <string name="begin">Begin Spel</string>
+    <string name="opnieuw">Begin Opnieuw</string>
+    <string name="box">Box</string>
     
     
 
