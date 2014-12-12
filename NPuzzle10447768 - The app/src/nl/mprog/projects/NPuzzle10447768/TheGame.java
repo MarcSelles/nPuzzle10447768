@@ -25,49 +25,44 @@ import android.view.MenuItem;
 
 @SuppressLint("NewApi") public class TheGame extends Activity
 {
-    public static final String MyPREFERENCES = "MyPrefs" ;
-    public static final String Difficulty = "difficulty"; 
-    public static final String ImageNumber = "imagenumber";
-    public static final String State = "state";
-    public static final String Array = "array";
-    
-    
-
-    SharedPreferences settings;
-
-    public int reqHeight = 0, reqWidth = 0;
-
-    public int[] imageIds =
+	public Integer[] idsOfImages =
         {
-    		R.drawable.brooklyn_bridge,
+            R.drawable.brooklyn_bridge,
             R.drawable.diggrini_island,
             R.drawable.manhattan_skyline,
             R.drawable.qatar_skyline,
             R.drawable.rush_hour,
-            R.drawable.singapore_city
+            R.drawable.singapore_city,
+            R.drawable.lake,
+            R.drawable.space,
+            R.drawable.waterfall,
+            R.drawable.real_place
         };
+	
+    public static final String Difficulty = "difficulty",  
+    		NumberOfImage = "numberofimage",
+    		Condition = "condition",
+    		Sequence = "sequence",
+    		Preferences = "preferences" ;
+    SharedPreferences settings;
 
-    public ImageView emptyTile;
-    public int emptyTileRow = 0, emptyTileColumn = 0;
-    public int state = 0;
-    public int restart = 0;
-    public int afterTimer = 0;
+    public int reqHeight = 0, reqWidth = 0, condition = 0, 
+    		restart = 0, afterTimer = 0, rowEmptyBox = 0, 
+    		columnEmptyBox = 0, difficulty = 0, imagenumber = 0,
+    		dimensionTiles = 0;
+    
+
+    public ImageView emptyBox;
     public int[][] stateTiles  = new int[2][50];
 
-    public int[][] tileIds =
-        {
-            {R.id.h11, R.id.h12, R.id.h13, R.id.h14, R.id.h15},
-            {R.id.h21, R.id.h22, R.id.h23, R.id.h24, R.id.h25},
-            {R.id.h31, R.id.h32, R.id.h33, R.id.h34, R.id.h35},
-            {R.id.h41, R.id.h42, R.id.h43, R.id.h44, R.id.h45},
-            {R.id.h51, R.id.h52, R.id.h53, R.id.h54, R.id.h55}
+    public int[][] tileIds = {
+            {R.id.r1e1, R.id.r1e2, R.id.r1e3, R.id.r1e4, R.id.r1e5},
+            {R.id.r2e1, R.id.r2e2, R.id.r2e3, R.id.r2e4, R.id.r2e5},
+            {R.id.r3e1, R.id.r3e2, R.id.r3e3, R.id.r3e4, R.id.r3e5},
+            {R.id.r4e1, R.id.r4e2, R.id.r4e3, R.id.r4e4, R.id.r4e5},
+            {R.id.r5e1, R.id.r5e2, R.id.r5e3, R.id.r5e4, R.id.r5e5}
         };
-
-
-    public int difficulty = 0, imagenumber = 0, dimensionTiles = 0;
-
-    
-    
+   
     
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -77,12 +72,11 @@ import android.view.MenuItem;
 
         //krijg info van intents
         difficulty = getIntent().getExtras().getInt("difficulty");
-        imagenumber = getIntent().getExtras().getInt("imagebm");
+        imagenumber = getIntent().getExtras().getInt("imageID");
         restart = getIntent().getExtras().getInt("restart");
 
-        double scaleDisplayMetrics = 0.8;
-        reqWidth = (int) (getResources().getDisplayMetrics().widthPixels * scaleDisplayMetrics);
-        reqHeight= (int) (getResources().getDisplayMetrics().widthPixels * scaleDisplayMetrics);
+        reqWidth = (int) (getResources().getDisplayMetrics().widthPixels * 0.8);
+        reqHeight= (int) (getResources().getDisplayMetrics().widthPixels * 0.8);
         
 
         dimensionTiles = difficulty + 3;
@@ -92,26 +86,26 @@ import android.view.MenuItem;
         //maak bitmap van img     
         try
         {
-            fullImageBitmap = BitmapFactory.decodeResource(getResources(), imageIds[imagenumber]);
+            fullImageBitmap = BitmapFactory.decodeResource(getResources(), idsOfImages[imagenumber]);
         }
         catch(OutOfMemoryError e)
         {
             options.inSampleSize = 1;
             try
             {
-                fullImageBitmap = BitmapFactory.decodeResource(getResources(), imageIds[imagenumber], options); 
+                fullImageBitmap = BitmapFactory.decodeResource(getResources(), idsOfImages[imagenumber], options); 
             }
             catch(OutOfMemoryError e2)
             {
                 options.inSampleSize *= 2;
                 try
                 {
-                    fullImageBitmap = BitmapFactory.decodeResource(getResources(), imageIds[imagenumber], options);   
+                    fullImageBitmap = BitmapFactory.decodeResource(getResources(), idsOfImages[imagenumber], options);   
                 }
                 catch(OutOfMemoryError e3)
                 {
                         options.inSampleSize *= 2;
-                        fullImageBitmap = BitmapFactory.decodeResource(getResources(), imageIds[imagenumber], options);   
+                        fullImageBitmap = BitmapFactory.decodeResource(getResources(), idsOfImages[imagenumber], options);   
                 }
             }
         }
@@ -122,13 +116,13 @@ import android.view.MenuItem;
         //menubutton
         maakMenu();
 
-        settings = getSharedPreferences(MyPREFERENCES, 0);
-        state = settings.getInt(State,0);
+        settings = getSharedPreferences(Preferences, 0);
+        condition = settings.getInt(Condition,0);
 
-        if(state == 1)
+        if(condition == 1)
         {
             //stateTiles vullen met tiles van eerdere state
-            String savedString = settings.getString(Array, "");
+            String savedString = settings.getString(Sequence, "");
             StringTokenizer st = new StringTokenizer(savedString, ",");
             if(savedString != null && !savedString.isEmpty())
             {
@@ -142,11 +136,11 @@ import android.view.MenuItem;
         //maak tiles
         createBitmapPieces(scaledImageBitmap, difficulty);
         afterTimer = 0;
-        settings = getSharedPreferences(MyPREFERENCES, 0);
-        state = settings.getInt(State,0);
-        if(state != 1)
+        settings = getSharedPreferences(Preferences, 0);
+        condition = settings.getInt(Condition,0);
+        if(condition != 1)
         {
-            emptyTile = (ImageView) findViewById(tileIds[0][0]);
+            emptyBox = (ImageView) findViewById(tileIds[0][0]);
             //laat tiles even zien
             Runnable r = new Runnable()
             {
@@ -173,14 +167,14 @@ import android.view.MenuItem;
     public void onPause()
     {
         super.onPause();
-        settings = getSharedPreferences(MyPREFERENCES, 0);
+        settings = getSharedPreferences(Preferences, 0);
         Editor editor = settings.edit();
         editor.clear();
         if(restart != 1)
         {
             editor.putInt(Difficulty, difficulty);
-            editor.putInt(ImageNumber, imagenumber);
-            editor.putInt(State, 1);
+            editor.putInt(NumberOfImage, imagenumber);
+            editor.putInt(Condition, 1);
 
             String savedString = "";
 
@@ -192,7 +186,7 @@ import android.view.MenuItem;
                 str.append(stateTiles[0][j]).append(",");
                 savedString = str.toString();
             }
-            editor.putString(Array, savedString);
+            editor.putString(Sequence, savedString);
             editor.commit();
         }
     }
@@ -366,7 +360,7 @@ import android.view.MenuItem;
             {
                 ImageView imageTile;
                 imageTile = (ImageView) findViewById(tileIds[i][j]);
-                if(state == 0)
+                if(condition == 0)
                 {
                     if(i == 0 && j == 0)
                     {
@@ -380,7 +374,7 @@ import android.view.MenuItem;
                         imageTile.setTag(bitmapTiles[i][j]);  
                     }
                 }
-                else if(state == 1)
+                else if(condition == 1)
                 {
                     stateY = stateTiles[1][statesCount];
                     stateX = stateTiles[0][statesCount];
@@ -388,9 +382,9 @@ import android.view.MenuItem;
                     {
                         imageTile.setImageBitmap(bitmapTiles[stateX+offsetEmptyTile][stateY+offsetEmptyTile]);
                         imageTile.setTag(bitmapTiles[stateX+offsetEmptyTile][stateY+offsetEmptyTile]);
-                        emptyTile = (ImageView) findViewById(tileIds[i][j]);
-                        emptyTileRow = i;
-                        emptyTileColumn = j;
+                        emptyBox = (ImageView) findViewById(tileIds[i][j]);
+                        rowEmptyBox = i;
+                        columnEmptyBox = j;
                         imageTile.setVisibility(View.INVISIBLE);
                     }
                     else
@@ -439,21 +433,21 @@ import android.view.MenuItem;
                 }
             }
             //kijk of lege tile eromheen is
-            if(x-1 == emptyTileRow && y == emptyTileColumn ||
-                    x+1 == emptyTileRow && y == emptyTileColumn ||
-                    x == emptyTileRow && y-1 == emptyTileColumn ||
-                    x == emptyTileRow && y+1 == emptyTileColumn)
+            if(x-1 == rowEmptyBox && y == columnEmptyBox ||
+                    x+1 == rowEmptyBox && y == columnEmptyBox ||
+                    x == rowEmptyBox && y-1 == columnEmptyBox ||
+                    x == rowEmptyBox && y+1 == columnEmptyBox)
             {
                 //wissel views om
 
                 ImageView imageClicked = (ImageView) findViewById(tileIds[x][y]);
                 Bitmap bitmap = ((BitmapDrawable)imageClicked.getDrawable()).getBitmap();
-                emptyTile.setImageBitmap(bitmap);
-                emptyTile.setVisibility(View.VISIBLE);
+                emptyBox.setImageBitmap(bitmap);
+                emptyBox.setVisibility(View.VISIBLE);
                 imageClicked.setVisibility(View.INVISIBLE);
-                emptyTile = imageClicked;
-                emptyTileRow = x;
-                emptyTileColumn = y;
+                emptyBox = imageClicked;
+                rowEmptyBox = x;
+                columnEmptyBox = y;
             }
         }
     }
@@ -519,10 +513,10 @@ import android.view.MenuItem;
                 public void onClick(DialogInterface arg0, int arg1)
                 {
                     restart = 1;
-                    settings = getSharedPreferences(MyPREFERENCES, 0);
+                    settings = getSharedPreferences(Preferences, 0);
                     Editor editor = settings.edit();
                     editor.clear();
-                    editor.putInt(State, 0);
+                    editor.putInt(Condition, 0);
                     editor.commit();
                     Intent intent = new Intent(TheGame.this, MainActivity.class);
                     startActivity(intent);
@@ -563,10 +557,10 @@ import android.view.MenuItem;
     public void toStart(MenuItem item)
     {
         restart = 1;
-        settings = getSharedPreferences(MyPREFERENCES, 0);
+        settings = getSharedPreferences(Preferences, 0);
         Editor editor = settings.edit();
         editor.clear();
-        editor.putInt(State, 0);
+        editor.putInt(Condition, 0);
         editor.commit();
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
@@ -579,10 +573,10 @@ import android.view.MenuItem;
     public void toMakkelijker(MenuItem item)
     {
         restart = 1;
-        settings = getSharedPreferences(MyPREFERENCES, 0);
+        settings = getSharedPreferences(Preferences, 0);
         Editor editor = settings.edit();
         editor.clear();
-        editor.putInt(State, 0);
+        editor.putInt(Condition, 0);
         editor.commit();
         if(difficulty != 0)
         {
@@ -590,7 +584,7 @@ import android.view.MenuItem;
         }
         //stuur id van img mee en difficulty
         Intent intent = new Intent(this, TheGame.class);
-        intent.putExtra("imagebm", imagenumber);
+        intent.putExtra("imageID", imagenumber);
         intent.putExtra("difficulty", difficulty);
         startActivity(intent);
         finish();
@@ -602,10 +596,10 @@ import android.view.MenuItem;
     public void toMoeilijker(MenuItem item)
     {
         restart = 1;
-        settings = getSharedPreferences(MyPREFERENCES, 0);
+        settings = getSharedPreferences(Preferences, 0);
         Editor editor = settings.edit();
         editor.clear();
-        editor.putInt(State, 0);
+        editor.putInt(Condition, 0);
         editor.commit();
         if(difficulty != 2)
         {
@@ -613,7 +607,7 @@ import android.view.MenuItem;
         }
         //stuur id van img mee en difficulty
         Intent intent = new Intent(this, TheGame.class);
-        intent.putExtra("imagebm", imagenumber);
+        intent.putExtra("imageID", imagenumber);
         intent.putExtra("difficulty", difficulty);
         startActivity(intent);
         finish();
@@ -626,14 +620,14 @@ import android.view.MenuItem;
     public void toRestart(View v)
     {
         restart = 1;
-        settings = getSharedPreferences(MyPREFERENCES, 0);
+        settings = getSharedPreferences(Preferences, 0);
         Editor editor = settings.edit();
         editor.clear();
-        editor.putInt(State, 0);
+        editor.putInt(Condition, 0);
         editor.commit();
         //stuur id van img mee en difficulty
         Intent intent = new Intent(this, TheGame.class);
-        intent.putExtra("imagebm", imagenumber);
+        intent.putExtra("imageID", imagenumber);
         intent.putExtra("difficulty", difficulty);
         startActivity(intent);
         finish();

@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.widget.AdapterView.OnItemClickListener;
 import android.view.View;
@@ -20,14 +19,7 @@ import android.widget.TextView;
 @SuppressLint("NewApi")
 public class MainActivity extends Activity 
 {
-    public static final String State = "state";
-    public static final String Difficulty = "difficulty";
-    public static final String ImageNumber = "imagenumber";
-    public static final String MyPREFERENCES = "MyPrefs" ;
-    SharedPreferences settings;
-
-    //ids van puzzle opslaan
-    public Integer[] imageIds =
+    public Integer[] idsOfImages =
         {
             R.drawable.brooklyn_bridge,
             R.drawable.diggrini_island,
@@ -41,9 +33,14 @@ public class MainActivity extends Activity
             R.drawable.real_place
         };
     
-    public int difficulty = 1, imagenumber = 0;
-    public int reqHeight = 0, reqWidth = 0;
-
+    public static final String Difficulty = "difficulty",
+    		NumberOfImage = "numberofimage",
+    		Condition = "condition",
+    		Preferences = "preferences";
+    SharedPreferences settings;
+    
+    public int imagenumber = 0,
+    		difficulty = 1;
 
     
     @Override
@@ -51,36 +48,17 @@ public class MainActivity extends Activity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
-        
-        //make the gallery
+
+        // Get the images
         GridView theGallery = (GridView)findViewById(R.id.theGallery);
         theGallery.setAdapter(new ImageAdapter(this));
         theGallery.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
             	TextView afb = (TextView) findViewById(R.id.afbeeldingID);
   	            afb.setText("Gekozen Afbeelding: " + (position+1));
-  	          imagenumber = position;
+  	            imagenumber = position;
             }
-        });
-        
-        
-        
-//        theGallery.setOnItemClickListener(new OnItemClickListener() {
-//            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-//                TextView tv = (TextView) findViewById(R.id.textAfbeeldingNr);
-//                tv.setText("Gekozen Afbeelding: " + (i+1));
-//                imagenumber = i;
-//            }
-//        }
-        
-//        reqWidth = (int) (getResources().getDisplayMetrics().widthPixels * 0.4);
-//        reqHeight= (int) (getResources().getDisplayMetrics().widthPixels * 0.4);
-        //vul gallery met imgs
-//        for(int i=0;i<imageIds.length;i++)
-//        {
-//            theGallery.addView(addToGallery(imageIds[i], i));
-//        }    
+        }); 
     }
     
     
@@ -93,7 +71,7 @@ public class MainActivity extends Activity
         }
 
         public int getCount() {
-            return imageIds.length;
+            return idsOfImages.length;
         }
 
         public Object getItem(int position) {
@@ -106,24 +84,92 @@ public class MainActivity extends Activity
 
         // create a new ImageView for each item referenced by the Adapter
         public View getView(int position, View convertView, ViewGroup parent) {
-            ImageView imageView;
-            if (convertView == null) {  // if it's not recycled, initialize some attributes
-                imageView = new ImageView(mContext);
-                imageView.setLayoutParams(new GridView.LayoutParams(500, 500));
-                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                imageView.setPadding(8, 8, 8, 8);
-            } else {
-                imageView = (ImageView) convertView;
-            }
-            imageView.setImageResource(imageIds[position]);
-            return imageView;
+//          //maak bitmap
+//          Bitmap bm = null, bm2 = null;
+//          final BitmapFactory.Options options = new BitmapFactory.Options();
+//          //vul bitmap
+//          try
+//          {
+//              bm = BitmapFactory.decodeResource(getResources(), position);
+//          }
+//          catch(OutOfMemoryError e)
+//          {
+//              options.inSampleSize = 2;
+//              try
+//              {
+//                  bm = BitmapFactory.decodeResource(getResources(), position, options); 
+//              }
+//              catch(OutOfMemoryError e2)
+//              {
+//                  options.inSampleSize *= 2;
+//                  try{
+//                      bm = BitmapFactory.decodeResource(getResources(), position, options);   
+//                  }
+//                  catch(OutOfMemoryError e3)
+//                  {
+//                      options.inSampleSize *= 2;
+//                      bm = BitmapFactory.decodeResource(getResources(), position, options);   
+//                  }
+//  
+//              }
+//              //Use BitmapFactory.Options with an inSampleSize >= 1, and do inSampleSize *= 2 before each retry. 
+//          }
+//          //maak bitmap kleiner anders lag
+//          int subsample = resizeBitmap(bm);
+//          bm.recycle();
+//          options.inSampleSize = subsample;
+//          
+//          //maak bitmap met subsample
+//          bm2 = BitmapFactory.decodeResource(getResources(), position, options); 
+//          
+//        //layout
+//          int padding = 50;
+//          LinearLayout layout = new LinearLayout(mContext);
+//          layout.setLayoutParams(new LayoutParams(reqHeight+padding, reqWidth+padding));
+//          layout.setGravity(Gravity.CENTER);
+
+          //set img view voor bitmap
+          ImageView imageView;
+          if (convertView == null) {  // if it's not recycled, initialize some attributes
+              imageView = new ImageView(mContext);
+              imageView.setLayoutParams(new GridView.LayoutParams(500, 500));
+              imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+              imageView.setPadding(8, 8, 8, 8);
+//              imageView.setImageBitmap(bm2);
+          } else {
+              imageView = (ImageView) convertView;
+          }
+          imageView.setImageResource(idsOfImages[position]);
+          return imageView;
         }
     }
+
+//  public int resizeBitmap(Bitmap bm)
+//  {
+//      //haal height/width van img
+//      int bmheight = bm.getHeight(), bmwidth = bm.getWidth();
+//      int subsample = 1;
+//      //bereken subsample
+//      if(bmheight > reqHeight || bmwidth > reqWidth)
+//      {
+//          if(bmwidth > bmheight)
+//          {
+//              subsample = (int) (bmheight/reqHeight);   
+//          } else 
+//          {
+//              subsample = (int) (bmwidth/reqWidth);   
+//          }   
+//      }
+//      return subsample;
+//  }
     
+    // Set the difficulty by clicking on Radio Button
     public void onRadioButtonClicked(View view) {
+
         // Is the button now checked?
         boolean checked = ((RadioButton) view).isChecked();
         TextView textdif = (TextView) findViewById(R.id.textMoeilijkheid);
+
         // Check which radio button was clicked
         switch(view.getId()) {
             case R.id.makkelijk:
@@ -149,23 +195,22 @@ public class MainActivity extends Activity
     
     
     @Override
-    protected void onResume()
-    {
+    protected void onResume() {
         super.onResume();
 
-        settings = getSharedPreferences(MyPREFERENCES, 0);
+        settings = getSharedPreferences(Preferences, 0);
 
         // Necessary to clear first if we save preferences onPause. 
-        int state = settings.getInt(State,0);
-        int stateDifficulty = settings.getInt(Difficulty, 0);
-        int stateImgnr = settings.getInt(ImageNumber, 0);
+        int condition = settings.getInt(Condition,0);
+        int imageCond = settings.getInt(NumberOfImage, 0);
+        int difficultyCond = settings.getInt(Difficulty, 0);
 
-        if(state == 1)
+        if(condition == 1)
         { 
             Intent intent = new Intent(this, TheGame.class);
-            //stuur id van img mee en moeilijkheid
-            intent.putExtra("imagebm", stateImgnr);
-            intent.putExtra("difficulty", stateDifficulty);
+            // Send imageID and difficulty with the new Intent
+            intent.putExtra("imageID", imageCond);
+            intent.putExtra("difficulty", difficultyCond);
             startActivity(intent);
             finish();
         }
@@ -174,105 +219,12 @@ public class MainActivity extends Activity
     }
 
     
-    
-    //gallery
-//    public View addToGallery(Integer imageId, final Integer i)
-//    {
-//        //maak bitmap
-//        Bitmap bm = null, bm2 = null;
-//        final BitmapFactory.Options options = new BitmapFactory.Options();
-//        //vul bitmap
-//        try
-//        {
-//            bm = BitmapFactory.decodeResource(getResources(), imageId);
-//        }
-//        catch(OutOfMemoryError e)
-//        {
-//            options.inSampleSize = 2;
-//            try
-//            {
-//                bm = BitmapFactory.decodeResource(getResources(), imageId, options); 
-//            }
-//            catch(OutOfMemoryError e2)
-//            {
-//                options.inSampleSize *= 2;
-//                try{
-//                    bm = BitmapFactory.decodeResource(getResources(), imageId, options);   
-//                }
-//                catch(OutOfMemoryError e3)
-//                {
-//                    options.inSampleSize *= 2;
-//                    bm = BitmapFactory.decodeResource(getResources(), imageId, options);   
-//                }
-//
-//            }
-//            //Use BitmapFactory.Options with an inSampleSize >= 1, and do inSampleSize *= 2 before each retry. 
-//        }
-//        //maak bitmap kleiner anders lag
-//        int subsample = resizeBitmap(bm);
-//        bm.recycle();
-//        options.inSampleSize = subsample;
-//        
-//        //maak bitmap met subsample
-//        bm2 = BitmapFactory.decodeResource(getResources(), imageId, options); 
-//
-//        //layout
-//        int padding = 50;
-//        LinearLayout layout = new LinearLayout(getApplicationContext());
-//        layout.setLayoutParams(new LayoutParams(reqHeight+padding, reqWidth+padding));
-//        layout.setGravity(Gravity.CENTER);
-//
-//        //set img view voor bitmap
-//        ImageView imageView = new ImageView(getApplicationContext());
-//        imageView.setLayoutParams(new LayoutParams(reqHeight, reqWidth));
-//        //imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-//        imageView.setImageBitmap(bm2);
-//
-//        //set onclick op afbeelding in gallery
-//        imageView.setOnClickListener(new OnClickListener()
-//        {
-//            @Override
-//            public void onClick(View v)
-//            {
-//                TextView tv = (TextView) findViewById(R.id.afbeeldingID);
-//                tv.setText("Gekozen Afbeelding: " + (i+1));
-//                imagenumber = i;
-//            }
-//         });
-//
-//        layout.addView(imageView);
-//        return layout;
-//    }
-
-
-    
-    public int resizeBitmap(Bitmap bm)
-    {
-        //haal height/width van img
-        int bmheight = bm.getHeight(), bmwidth = bm.getWidth();
-        int subsample = 1;
-        //bereken subsample
-        if(bmheight > reqHeight || bmwidth > reqWidth)
-        {
-            if(bmwidth > bmheight)
-            {
-                subsample = (int) (bmheight/reqHeight);   
-            } else 
-            {
-                subsample = (int) (bmwidth/reqWidth);   
-            }   
-        }
-        return subsample;
-    }
-
-
-    
-    //naar Game
-    public void toGame(View view)
+    // Begin the Game
+    public void beginGame(View view)
     {
         Intent intent = new Intent(this, TheGame.class);
-        //stuur id van img mee en moeilijkheid
-        intent.putExtra("imagebm", imagenumber);
+     // Send imageID and difficulty with the new Intent
+        intent.putExtra("imageID", imagenumber);
         intent.putExtra("difficulty", difficulty);
         intent.putExtra("restart", 0);
         startActivity(intent);

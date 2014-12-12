@@ -13,9 +13,5 @@
         android:id="@+id/moeilijker"  
         android:title="@string/harder"
         android:onClick="toMoeilijker"/>  
-
-    <item  
-        android:id="@+id/terug"  
-        android:title="@string/returnGame"/> 
           
 </menu> 
